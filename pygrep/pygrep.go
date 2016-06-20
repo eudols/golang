@@ -24,7 +24,7 @@ func main() {
 	flag.BoolVar(&argC, "c", false, "")
 	flag.BoolVar(&argM, "m", false, "")
 	flag.BoolVar(&argJ, "j", false, "")
-	flag.StringVar(&filepattern, "f", `\.(h|c|cc|cpp)$`, "")
+	flag.StringVar(&filepattern, "f", `\.py$`, "")
 	flag.Parse()
 
 	if argC {
