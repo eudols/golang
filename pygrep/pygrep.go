@@ -3,8 +3,44 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
+	"path/filepath"
+	"regexp"
 )
+
+func printFile(filepattern string, pattern string) filepath.WalkFunc {
+	return func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			log.Print(err)
+			return nil
+		}
+		fmt.Println(filepattern)
+		fmt.Println(pattern)
+		fmt.Println(path)
+		var regExp = regexp.MustCompile(filepattern)
+
+		if regExp.MatchString(info.Name()) {
+			fmt.Printf("File %s matches\n", info.Name())
+		}
+		return nil
+	}
+}
+
+//
+// func printFile(path string, info os.FileInfo, err error) error {
+// 	if err != nil {
+// 		log.Print(err)
+// 		return nil
+// 	}
+// 	if info.IsDir() {
+// 		fmt.Println("I am a directory, skip me")
+// 		return nil
+// 	}
+// 	fmt.Print(info.Name())
+// 	fmt.Println(path)
+// 	return nil
+// }
 
 func main() {
 	pattern := ""
@@ -44,6 +80,12 @@ func main() {
 	fmt.Println(filepattern)
 	fmt.Println(pattern)
 
+	log.SetFlags(log.Lshortfile)
+	dir := "."
+	err := filepath.Walk(dir, printFile(filepattern, pattern))
+	if err != nil {
+		log.Fatal(err)
+	}
 	// argsWithProg := os.Args
 	// argsWithoutProg := os.Args[1:]
 	//
