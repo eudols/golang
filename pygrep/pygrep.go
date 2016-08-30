@@ -21,7 +21,7 @@ func printFile(filepattern string, pattern string) filepath.WalkFunc {
 		var regExp = regexp.MustCompile(filepattern)
 
 		if regExp.MatchString(info.Name()) {
-			fmt.Printf("File %s matches\n", info.Name())
+			fmt.Printf("File %s matches", info.Name())
 		}
 		return nil
 	}
