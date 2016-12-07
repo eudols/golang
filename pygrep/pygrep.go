@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"log"
@@ -9,19 +10,38 @@ import (
 	"regexp"
 )
 
+func fileSearch(fullpath string, pattern string) {
+	lineNumber := 0
+	// fmt.Printf("I am in fileSearch for %s , and file pattern %s\n", fullpath, pattern)
+	var regExp = regexp.MustCompile(pattern)
+	f, err := os.Open(fullpath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "*** Could not open %s\n", fullpath)
+	}
+	input := bufio.NewScanner(f)
+	for input.Scan() {
+		lineNumber++
+		if regExp.MatchString(input.Text()) {
+			fmt.Printf("%s:%d %s\n", fullpath, lineNumber, input.Text())
+		}
+	}
+	f.Close()
+}
+
 func printFile(filepattern string, pattern string) filepath.WalkFunc {
 	return func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			log.Print(err)
 			return nil
 		}
-		fmt.Println(filepattern)
-		fmt.Println(pattern)
-		fmt.Println(path)
+		// fmt.Println("printFile filepattern ", filepattern)
+		// fmt.Println("printFile pattern ", pattern)
+		// fmt.Println("printFile path ", path)
 		var regExp = regexp.MustCompile(filepattern)
 
 		if regExp.MatchString(info.Name()) {
-			fmt.Printf("File %s matches", info.Name())
+			// fmt.Printf("File %s matches\n", info.Name())
+			fileSearch(path, pattern)
 		}
 		return nil
 	}
@@ -54,7 +74,7 @@ func main() {
 		fmt.Println("  -m: search in make files")
 		fmt.Println("  -j: search in javascript files")
 		fmt.Println("  -f: use an alternate file regular expression")
-		fmt.Println("  (see \"man perlre\" for perl regular expressions)")
+		fmt.Println("  (see \"https://golang.org/pkg/regexp/\" for details on regular expressions)")
 	}
 
 	flag.BoolVar(&argC, "c", false, "")
@@ -77,8 +97,8 @@ func main() {
 	}
 
 	pattern = flag.Arg(0)
-	fmt.Println(filepattern)
-	fmt.Println(pattern)
+	// fmt.Println("filepattern ", filepattern)
+	// fmt.Println("pattern ", pattern)
 
 	log.SetFlags(log.Lshortfile)
 	dir := "."
