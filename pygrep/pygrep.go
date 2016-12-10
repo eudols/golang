@@ -127,7 +127,7 @@ func main() {
 	}
 
 	wg.Add(1)
-	a := make(chan chan string)
+	a := make(chan chan string, 100)
 	go collectLines(a)
 	log.SetFlags(log.Lshortfile)
 	dir := "."
